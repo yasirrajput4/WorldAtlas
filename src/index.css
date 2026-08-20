@@ -1,0 +1,56 @@
+@import "tailwindcss";
+
+@theme {
+  --color-ink: #0e1420;
+  --color-surface: #161d2e;
+  --color-surface-2: #1f2a42;
+  --color-line: #2a3550;
+  --color-parchment: #f4efe3;
+  --color-muted: #9aa5b8;
+  --color-brass: #c89b3c;
+  --color-brass-light: #e0bb63;
+  --color-ocean: #4c86a8;
+
+  --font-display: "Fraunces", "Georgia", serif;
+  --font-body: "Inter", system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+}
+
+@layer base {
+  html {
+    @apply overflow-x-hidden;
+  }
+
+  body {
+    @apply overflow-x-hidden bg-ink font-body text-parchment antialiased;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-display text-parchment;
+  }
+
+  a {
+    @apply text-parchment no-underline transition-colors duration-200;
+  }
+
+  a:hover {
+    @apply text-brass-light;
+  }
+
+  ::selection {
+    @apply bg-brass/30 text-parchment;
+  }
+
+  a:focus-visible,
+  button:focus-visible,
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible {
+    @apply outline-none ring-2 ring-brass ring-offset-2 ring-offset-ink;
+  }
+}
