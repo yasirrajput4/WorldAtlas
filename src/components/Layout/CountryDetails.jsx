@@ -1,25 +1,23 @@
-import { useEffect, useState, useTransition } from "react";
 import { NavLink, useParams } from "react-router-dom";
 import { getCountryIndData } from "../../api/postApi";
 import Loader from "../UI/Loader";
+import { useQuery } from "@tanstack/react-query";
 
 const CountryDetails = () => {
   const params = useParams();
 
-  const [isPending, startTransition] = useTransition();
-  const [country, setCountry] = useState();
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    startTransition(async () => {
-      try {
-        const res = await getCountryIndData(params.id);
-        setCountry(res.data.data.objects[0]);
-      } catch (err) {
-        setError(err);
-      }
-    });
-  }, [params.id]);
+  const {
+    isPending,
+    error,
+    data: country,
+  } = useQuery({
+    queryKey: ["countryIndData", params.id],
+    queryFn: async () => {
+      const res = await getCountryIndData(params.id);
+      return res.data.data.objects[0];
+    },
+    enabled: Boolean(params.id),
+  });
 
   if (isPending) return <Loader />;
   if (error || !country)
