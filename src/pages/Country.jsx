@@ -1,27 +1,59 @@
-import { useEffect, useState, useTransition } from "react";
+import { useMemo, useState } from "react";
 import { getCountryData } from "../api/postApi";
 import Loader from "../components/UI/Loader";
 import CountryCard from "../components/Layout/CountryCard";
 import SearchFilter from "../components/UI/SearchFilter";
+import { useQuery } from "@tanstack/react-query";
 
 function Country() {
-  const [isPending, startTransition] = useTransition();
-  const [countries, setCountries] = useState([]);
-  const [error, setError] = useState(null);
-
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all");
+  const [sortOrder, setSortOrder] = useState(null);
 
-  useEffect(() => {
-    startTransition(async () => {
-      try {
-        const res = await getCountryData();
-        setCountries(res.data.data.objects);
-      } catch (err) {
-        setError(err);
+  const {
+    isPending,
+    error,
+    data: countries = [],
+  } = useQuery({
+    queryKey: ["countries"],
+    queryFn: async () => {
+      const res = await getCountryData();
+      return res.data.data.objects;
+    },
+  });
+
+  const filterCountries = useMemo(() => {
+    const searchCountry = (country) => {
+      if (search) {
+        return country.names.common
+          .toLowerCase()
+          .includes(search.toLowerCase());
       }
+      return true;
+    };
+
+    const filterRegion = (country) => {
+      if (filter === "all") return true;
+      return country.region === filter;
+    };
+
+    const result = countries.filter(
+      (country) =>
+        country.flag?.url_svg &&
+        searchCountry(country) &&
+        filterRegion(country),
+    );
+
+    if (!sortOrder) return result;
+
+    return [...result].sort((a, b) => {
+      const nameA = a?.names?.common || "";
+      const nameB = b?.names?.common || "";
+      return sortOrder === "asc"
+        ? nameA.localeCompare(nameB)
+        : nameB.localeCompare(nameA);
     });
-  }, []);
+  }, [countries, search, filter, sortOrder]);
 
   if (isPending) return <Loader />;
   if (error)
@@ -33,23 +65,6 @@ function Country() {
       </div>
     );
 
-  const searchCountry = (country) => {
-    if (search) {
-      return country.names.common.toLowerCase().includes(search.toLowerCase());
-    }
-    return country;
-  };
-
-  const filterRegion = (country) => {
-    if (filter === "all") return country;
-    return country.region === filter;
-  };
-
-  const filterCountries = countries.filter(
-    (country) =>
-      country.flag?.url_svg && searchCountry(country) && filterRegion(country),
-  );
-
   return (
     <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6 sm:py-16 lg:px-8">
       <SearchFilter
@@ -57,8 +72,8 @@ function Country() {
         setSearch={setSearch}
         filter={filter}
         setFilter={setFilter}
-        countries={countries}
-        setCountries={setCountries}
+        sortOrder={sortOrder}
+        setSortOrder={setSortOrder}
       />
 
       {filterCountries.length === 0 ? (
