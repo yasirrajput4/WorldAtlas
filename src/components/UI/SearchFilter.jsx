@@ -1,8 +1,11 @@
-import { useState } from "react";
-
-function SearchFilter({ search, setSearch, filter, setFilter, setCountries }) {
-  const [activeSort, setActiveSort] = useState(null);
-
+function SearchFilter({
+  search,
+  setSearch,
+  filter,
+  setFilter,
+  sortOrder,
+  setSortOrder,
+}) {
   const handleInputChange = (e) => {
     e.preventDefault();
     setSearch(e.target.value);
@@ -12,27 +15,6 @@ function SearchFilter({ search, setSearch, filter, setFilter, setCountries }) {
     e.preventDefault();
     setFilter(e.target.value);
   }
-
-  const sortCountries = (value) => {
-    setActiveSort(value);
-    setCountries((prev) =>
-      [...prev].sort((a, b) => {
-        const nameA = a?.names?.common || "";
-        const nameB = b?.names?.common || "";
-
-        return value === "asc"
-          ? nameA.localeCompare(nameB)
-          : nameB.localeCompare(nameA);
-      }),
-    );
-  };
-
-  const sortButtonClass = (value) =>
-    `flex min-h-11 items-center justify-center rounded-full px-4 font-mono text-xs font-semibold uppercase tracking-wider transition-all duration-200 active:scale-95 ${
-      activeSort === value
-        ? "bg-brass text-ink shadow-sm"
-        : "text-muted hover:bg-surface-2 hover:text-brass-light"
-    }`;
 
   return (
     <section className="mb-10 flex flex-col flex-wrap items-stretch gap-4 sm:flex-row sm:items-center justify-between">
@@ -50,17 +32,23 @@ function SearchFilter({ search, setSearch, filter, setFilter, setCountries }) {
         <div className="flex rounded-full border border-line bg-surface/40 p-1">
           <button
             type="button"
-            onClick={() => sortCountries("asc")}
-            aria-pressed={activeSort === "asc"}
-            className={sortButtonClass("asc")}
+            onClick={() => setSortOrder("asc")}
+            className={`flex min-h-11 items-center justify-center rounded-full px-4 font-mono text-xs font-semibold uppercase tracking-wider transition-all duration-200 active:scale-95 ${
+              sortOrder === "asc"
+                ? "bg-brass text-ink shadow-sm"
+                : "text-muted hover:bg-surface-2 hover:text-brass-light"
+            }`}
           >
             Asc
           </button>
           <button
             type="button"
-            onClick={() => sortCountries("des")}
-            aria-pressed={activeSort === "des"}
-            className={sortButtonClass("des")}
+            onClick={() => setSortOrder("des")}
+            className={`flex min-h-11 items-center justify-center rounded-full px-4 font-mono text-xs font-semibold uppercase tracking-wider transition-all duration-200 active:scale-95 ${
+              sortOrder === "des"
+                ? "bg-brass text-ink shadow-sm"
+                : "text-muted hover:bg-surface-2 hover:text-brass-light"
+            }`}
           >
             Desc
           </button>
@@ -72,24 +60,12 @@ function SearchFilter({ search, setSearch, filter, setFilter, setCountries }) {
             value={filter}
             onChange={handleSelectChange}
           >
-            <option value="all" className="bg-surface text-parchment">
-              All Regions
-            </option>
-            <option value="Africa" className="bg-surface text-parchment">
-              Africa
-            </option>
-            <option value="Americas" className="bg-surface text-parchment">
-              Americas
-            </option>
-            <option value="Asia" className="bg-surface text-parchment">
-              Asia
-            </option>
-            <option value="Europe" className="bg-surface text-parchment">
-              Europe
-            </option>
-            <option value="Oceania" className="bg-surface text-parchment">
-              Oceania
-            </option>
+            <option value="all">All Regions</option>
+            <option value="Africa">Africa</option>
+            <option value="Americas">Americas</option>
+            <option value="Asia">Asia</option>
+            <option value="Europe">Europe</option>
+            <option value="Oceania">Oceania</option>
           </select>
         </div>
       </div>
