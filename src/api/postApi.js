@@ -17,7 +17,7 @@ export const getCountryData = () => {
 };
 
 export const getCountryIndData = (name) => {
-  return api.get(`/names.common/${name}`, {
+  return api.get(`/names.common/${encodeURIComponent(name)}`, {
     params: {
       response_fields:
         "names,population,region,subregion,capitals,tlds,currencies,languages,borders,flag",
