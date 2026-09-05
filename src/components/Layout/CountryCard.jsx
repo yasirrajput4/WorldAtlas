@@ -83,7 +83,7 @@ const CountryCard = ({ country }) => {
           </div>
 
           <NavLink
-            to={`/country/${names.common}`}
+            to={`/country/${encodeURIComponent(names.common)}`}
             className="mt-4"
             onClick={(e) => e.stopPropagation()}
           >
